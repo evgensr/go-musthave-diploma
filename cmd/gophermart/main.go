@@ -4,7 +4,6 @@ import (
 	"flag"
 	"github.com/caarlos0/env/v6"
 	"github.com/evgensr/go-musthave-diploma/internal/app"
-	"github.com/gorilla/sessions"
 	"log"
 	"os"
 )
@@ -28,12 +27,17 @@ func main() {
 
 	flag.Parse()
 
-	sessionStore := sessions.NewCookieStore([]byte(conf.SessionKey))
+	// sessionStore := sessions.NewCookieStore([]byte(conf.SessionKey))
 
-	server := app.New(&conf, sessionStore)
-
-	if err := server.Start(); err != nil {
-		log.Fatal(err)
+	if err := app.Start(&conf); err != nil {
+		log.Fatal("fatal ", err)
 	}
+
+	//
+	//server := app.New(&conf, sessionStore)
+	//
+	//if err := server.Start(); err != nil {
+	//	log.Fatal(err)
+	//}
 
 }
