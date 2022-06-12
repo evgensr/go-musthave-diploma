@@ -2,7 +2,6 @@ package sqlstore
 
 import (
 	"database/sql"
-
 	"github.com/evgensr/go-musthave-diploma/internal/store"
 	_ "github.com/lib/pq" // ...
 )

@@ -14,6 +14,7 @@ require (
 	github.com/gorilla/sessions v1.2.1 // indirect
 	github.com/lib/pq v1.10.6 // indirect
 	github.com/sirupsen/logrus v1.8.1 // indirect
+	github.com/theplant/luhn v0.0.0-20170224032821-81a1a381387a // indirect
 	golang.org/x/crypto v0.0.0-20220525230936-793ad666bf5e // indirect
 	golang.org/x/sys v0.0.0-20210615035016-665e8c7367d1 // indirect
 )
