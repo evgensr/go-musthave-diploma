@@ -98,10 +98,16 @@ func (s *server) handlerPostOrders() http.HandlerFunc {
 		order.ID = string(orderID)
 
 		expectedUser, err := s.store.User().SelectUserForOrder(s.ctx, order)
-		if expectedUser != 0 {
+		if expectedUser == user.ID {
 			s.respond(w, r, 200, struct {
 				Status string `json:"status"`
 			}{Status: "the order number has already been uploaded by this user"})
+			return
+		}
+		if expectedUser != 0 {
+			s.respond(w, r, 409, struct {
+				Status string `json:"status"`
+			}{Status: "the order number has already been uploaded by other user"})
 			return
 		}
 
@@ -259,10 +265,10 @@ func (s *server) handlerGetWithdraw() http.HandlerFunc {
 			return
 		}
 		// проверяем существование записей о списании
-		if len(result) == 0 {
-			s.error(w, r, 204, errors.New("result empty"))
-			return
-		}
+		//if len(result) == 0 {
+		//	s.error(w, r, 204, errors.New("result empty"))
+		//	return
+		//}
 
 		s.respond(w, r, http.StatusAccepted, result)
 

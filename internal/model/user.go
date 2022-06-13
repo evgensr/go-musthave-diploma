@@ -26,6 +26,12 @@ type Order struct {
 	UserID int64     `json:"user_id,omitempty"`
 }
 
+type AccrualOrder struct {
+	ID     string `json:"order,omitempty"`
+	Status string `json:"status,omitempty"`
+	Amount int64  `json:"accrual,omitempty"`
+}
+
 type Balance struct {
 	Current   int64 `json:"current"`
 	Withdrawn int64 `json:"withdrawn"`

@@ -13,5 +13,6 @@ type UserRepository interface {
 	InsertOrder(ctx context.Context, order model.Order) error
 	SelectAllOrders(ctx context.Context, u int64) ([]*model.Order, error)
 	SelectBalance(ctx context.Context, user int64) (*model.Balance, error)
-	SelectAllWithdrawals(context.Context, int64) ([]model.Withdrawal, error)
+	SelectAllWithdrawals(context.Context, int64) (*[]model.Withdrawal, error)
+	SelectOrdersForUpdate(context.Context, chan []model.Order, chan model.Order)
 }

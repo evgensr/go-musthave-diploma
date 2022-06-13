@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/evgensr/go-musthave-diploma/internal/model"
 	"github.com/evgensr/go-musthave-diploma/internal/store"
+	"log"
 )
 
 type UserRepository struct {
@@ -91,7 +92,6 @@ func (r *UserRepository) InsertOrder(ctx context.Context, order model.Order) err
 	return nil
 }
 
-// SelectUserForOrder
 func (r *UserRepository) SelectUserForOrder(ctx context.Context, order model.Order) (int64, error) {
 
 	var id int64
@@ -145,7 +145,7 @@ func (r *UserRepository) SelectBalance(ctx context.Context, u int64) (*model.Bal
 }
 
 // SelectAllWithdrawals select balance
-func (r *UserRepository) SelectAllWithdrawals(ctx context.Context, u int64) ([]model.Withdrawal, error) {
+func (r *UserRepository) SelectAllWithdrawals(ctx context.Context, u int64) (*[]model.Withdrawal, error) {
 
 	var listOrders []model.Withdrawal
 
@@ -168,6 +168,94 @@ func (r *UserRepository) SelectAllWithdrawals(ctx context.Context, u int64) ([]m
 		listOrders = append(listOrders, o)
 	}
 
-	return listOrders, nil
+	return &listOrders, nil
 
+}
+
+func (r *UserRepository) doTransaction(fu ...func() error) error {
+
+	tx, err := r.store.db.Begin()
+	if err != nil {
+		return fmt.Errorf("starting connection failed: %v", err)
+	}
+	defer tx.Rollback()
+
+	for _, f := range fu {
+		err := f()
+		if err != nil {
+			return fmt.Errorf("transaction failed: %v", err)
+		}
+	}
+
+	if err = tx.Commit(); err != nil {
+		return fmt.Errorf("transaction failed: %v", err)
+	}
+
+	return nil
+}
+
+func (r *UserRepository) SelectOrdersForUpdate(ctx context.Context, oin chan []model.Order, oout chan model.Order) {
+	var listOrders []model.Order
+	err := r.doTransaction(
+		func() error {
+
+			row, err := r.store.db.Query(`SELECT order_id, status FROM bonuses 
+										WHERE status not in ('PROCESSED', 'INVALID') LIMIT 1 FOR UPDATE SKIP LOCKED`)
+			if err != nil {
+				return fmt.Errorf("init select from bonuses failed: %v", err)
+			}
+			defer row.Close()
+
+			for row.Next() {
+				var o model.Order
+				err := row.Scan(&o.ID, &o.Status)
+				if err != nil {
+					return fmt.Errorf("select bonuses for update failed: %v", err)
+				}
+				listOrders = append(listOrders, o)
+			}
+			oin <- listOrders
+			return nil
+		},
+		func() error {
+			stmtBonuses, err := r.store.db.Prepare("UPDATE bonuses SET change=$1, status=$2 where order_id=$3")
+
+			if err != nil {
+				return fmt.Errorf("init update users failed: %v", err)
+			}
+
+			stmtUsers, err := r.store.db.Prepare("UPDATE users SET balance=balance+$1 where id=$2;")
+
+			if err != nil {
+				return fmt.Errorf("init update users failed: %v", err)
+			}
+
+			for {
+			insertUpdates:
+				select {
+				case bonus, ok := <-oout:
+					if !ok {
+						break insertUpdates
+					}
+
+					if _, err = stmtUsers.Exec(bonus.Amount, bonus.UserID); err != nil {
+						log.Println(bonus.Amount)
+						return fmt.Errorf("update user amount failed: %v", err)
+					}
+
+					if _, err = stmtBonuses.Exec(bonus.Amount, bonus.Status, bonus.ID); err != nil {
+						return fmt.Errorf("update amount failed: %v", err)
+					}
+
+				case <-ctx.Done():
+					log.Println("context canceled")
+					return nil
+				}
+				return nil
+			}
+		})
+
+	if err != nil {
+		log.Fatalf("transaction failed: %v", err)
+	}
 }
