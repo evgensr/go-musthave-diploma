@@ -217,7 +217,7 @@ func (s *server) handlerPostWithdraw() http.HandlerFunc {
 		user := r.Context().Value(ctxKeyUser).(*model.User)
 
 		// преобразуем строку ордера в число int для проверки луна
-		i, err := strconv.Atoi(string(o.ID))
+		i, err := strconv.Atoi(strconv.FormatInt(o.ID, 10))
 		if err != nil {
 			s.error(w, r, http.StatusInternalServerError, err)
 			return
