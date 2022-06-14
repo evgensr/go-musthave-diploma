@@ -60,6 +60,8 @@ func (s *server) handleWhoami() http.HandlerFunc {
 
 }
 
+// handlerPostOrders загрузка пользователем номера заказа для расчёта
+// POST /api/user/orders
 func (s *server) handlerPostOrders() http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -88,6 +90,8 @@ func (s *server) handlerPostOrders() http.HandlerFunc {
 		order.Status = "NEW"
 		order.Type = "top_up"
 		order.ID = string(orderID)
+
+		s.logger.Info("post new order: ", order)
 
 		expectedUser, err := s.store.User().SelectUserForOrder(s.ctx, order)
 		if expectedUser == user.ID {
