@@ -222,6 +222,11 @@ func (s *server) handlerPostWithdraw() http.HandlerFunc {
 		var o model.Withdrawal
 		err := decoder.Decode(&o)
 
+		if err != nil {
+			s.error(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
 		// получаем текущего пользователя из контекста
 		user := r.Context().Value(ctxKeyUser).(*model.User)
 
