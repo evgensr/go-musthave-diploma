@@ -162,6 +162,7 @@ func (r *UserRepository) SelectAllWithdrawals(ctx context.Context, u int64) (*[]
 		}
 		listOrders = append(listOrders, o)
 	}
+	log.Println("Withdrawals", listOrders)
 
 	return &listOrders, nil
 

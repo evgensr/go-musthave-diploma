@@ -121,6 +121,7 @@ func (s *server) handlerGetOrders() http.HandlerFunc {
 
 		user := r.Context().Value(ctxKeyUser).(*model.User)
 		orders, err := s.store.User().SelectAllOrders(s.ctx, user.ID)
+		s.logger.Info("orders", orders)
 
 		if err != nil {
 			s.error(w, r, http.StatusInternalServerError, err)
