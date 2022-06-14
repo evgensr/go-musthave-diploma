@@ -230,6 +230,8 @@ func (s *server) handlerPostWithdraw() http.HandlerFunc {
 			s.error(w, r, http.StatusInternalServerError, err)
 			return
 		}
+		log.Println("текущий баланс", balance)
+		log.Println("списание ", o.Amount)
 
 		// если баланс, который пришел от пользователя, больше его текущего, то выходим с ошибкой
 		if o.Amount > balance.Current {

@@ -98,6 +98,23 @@ func (o *Order) MarshalJSON() ([]byte, error) {
 	return json.Marshal(nb)
 }
 
+func (w *Withdrawal) UnmarshalJSON(data []byte) error {
+	type newU struct {
+		ID     string  `json:"order,omitempty"`
+		Amount float64 `json:"sum,omitempty"`
+	}
+	nu := newU{}
+
+	if err := json.Unmarshal(data, &nu); err != nil {
+		return err
+	}
+
+	w.ID = nu.ID
+	w.Amount = int64(nu.Amount * 100)
+
+	return nil
+}
+
 func (w *Withdrawal) MarshalJSON() ([]byte, error) {
 
 	type newWithdrawal struct {
