@@ -27,7 +27,7 @@ func Start(config *Config) error {
 
 	ctxWorker, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	statusTicker := time.NewTicker(time.Duration(5) * time.Second)
+	statusTicker := time.NewTicker(time.Duration(1) * time.Second)
 	worker := NewWorker(ctxWorker, srv.logger, store, config)
 	go worker.UpdateStatus(statusTicker.C)
 
