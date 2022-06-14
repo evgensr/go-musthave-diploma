@@ -6,6 +6,7 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation"
 	"golang.org/x/crypto/bcrypt"
 	"math"
+	"strconv"
 	"time"
 )
 
@@ -18,7 +19,7 @@ type User struct {
 }
 
 type Order struct {
-	ID     string    `json:"number,omitempty"`
+	ID     int64     `json:"number,omitempty"`
 	Status string    `json:"status,omitempty"`
 	Amount int64     `json:"accrual,omitempty"`
 	Date   time.Time `json:"uploaded_at,omitempty"`
@@ -27,7 +28,7 @@ type Order struct {
 }
 
 type AccrualOrder struct {
-	ID     string `json:"order,omitempty"`
+	ID     int64  `json:"order,omitempty"`
 	Status string `json:"status,omitempty"`
 	Amount int64  `json:"accrual,omitempty"`
 }
@@ -38,7 +39,7 @@ type Balance struct {
 }
 
 type Withdrawal struct {
-	ID     string    `json:"order,omitempty"`
+	ID     int64     `json:"order,omitempty"`
 	Amount int64     `json:"sum,omitempty"`
 	Date   time.Time `json:"processed_at,omitempty"`
 }
@@ -109,7 +110,12 @@ func (w *Withdrawal) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	w.ID = nu.ID
+	s, err := strconv.Atoi(nu.ID)
+	if err != nil {
+		return fmt.Errorf("order invalid")
+	}
+
+	w.ID = int64(s)
 	w.Amount = int64(nu.Amount * 100)
 
 	return nil
@@ -144,4 +150,22 @@ func (b *Balance) MarshalJSON() ([]byte, error) {
 	}
 
 	return json.Marshal(nb)
+}
+
+func (b *Balance) UnmarshalJSON(data []byte) error {
+	type newBalance struct {
+		Current   float64 `json:"current"`
+		Withdrawn float64 `json:"withdrawn"`
+	}
+
+	var nu newBalance
+
+	if err := json.Unmarshal(data, &nu); err != nil {
+		return err
+	}
+
+	b.Current = int64(nu.Current * 100)
+	b.Withdrawn = int64(nu.Withdrawn * 100)
+
+	return nil
 }

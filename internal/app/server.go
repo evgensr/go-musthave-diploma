@@ -89,7 +89,7 @@ func (s *server) handlerPostOrders() http.HandlerFunc {
 		order.UserID = user.ID
 		order.Status = "NEW"
 		order.Type = "top_up"
-		order.ID = string(orderID)
+		order.ID = int64(id)
 
 		s.logger.Info("post new order: ", order)
 
@@ -217,7 +217,7 @@ func (s *server) handlerPostWithdraw() http.HandlerFunc {
 		user := r.Context().Value(ctxKeyUser).(*model.User)
 
 		// преобразуем строку ордера в число int для проверки луна
-		i, err := strconv.Atoi(o.ID)
+		i, err := strconv.Atoi(string(o.ID))
 		if err != nil {
 			s.error(w, r, http.StatusInternalServerError, err)
 			return
