@@ -252,7 +252,7 @@ func (s *server) handlerPostWithdraw() http.HandlerFunc {
 			return
 		}
 
-		s.respond(w, r, http.StatusAccepted, struct {
+		s.respond(w, r, http.StatusOK, struct {
 			Status string `json:"status"`
 		}{Status: "ok"})
 
