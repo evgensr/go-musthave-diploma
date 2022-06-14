@@ -69,24 +69,16 @@ func (s *server) handlerPostOrders() http.HandlerFunc {
 
 		orderID, err := ioutil.ReadAll(r.Body)
 		if err != nil {
-			s.respond(w, r, http.StatusBadRequest, struct {
-				Status string `json:"status"`
-			}{Status: "invalid request format"})
+			s.error(w, r, http.StatusBadRequest, errors.New("invalid request format"))
 			return
 		}
 
-		// log.Println(string(orderID))
-		// log.Println(r.Context().Value(ctxKeyUser))
-
-		// id, _ := strconv.Atoi(string(orderID))
 		id, _ := strconv.Atoi(string(orderID))
 
 		// проверка луна
 		ok := luhn.Valid(id)
 		if !ok {
-			s.respond(w, r, 422, struct {
-				Status string `json:"status"`
-			}{Status: "invalid order number format"})
+			s.error(w, r, 422, errors.New("invalid order number format"))
 			return
 		}
 
@@ -99,15 +91,11 @@ func (s *server) handlerPostOrders() http.HandlerFunc {
 
 		expectedUser, err := s.store.User().SelectUserForOrder(s.ctx, order)
 		if expectedUser == user.ID {
-			s.respond(w, r, 200, struct {
-				Status string `json:"status"`
-			}{Status: "the order number has already been uploaded by this user"})
+			s.error(w, r, 200, errors.New("the order number has already been uploaded by this user"))
 			return
 		}
 		if expectedUser != 0 {
-			s.respond(w, r, 409, struct {
-				Status string `json:"status"`
-			}{Status: "the order number has already been uploaded by other user"})
+			s.error(w, r, 409, errors.New("the order number has already been uploaded by other user"))
 			return
 		}
 
@@ -121,25 +109,22 @@ func (s *server) handlerPostOrders() http.HandlerFunc {
 
 }
 
+// handlerGetOrders Получение списка загруженных номеров заказов
+// GET /api/user/orders
 func (s *server) handlerGetOrders() http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		user := r.Context().Value(ctxKeyUser).(*model.User)
-
 		orders, err := s.store.User().SelectAllOrders(s.ctx, user.ID)
 
 		if err != nil {
-			s.respond(w, r, http.StatusInternalServerError, struct {
-				Status string `json:"status"`
-			}{Status: err.Error()})
+			s.error(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
 		if len(orders) == 0 {
-			s.respond(w, r, 204, struct {
-				Status string `json:"status"`
-			}{Status: "no data for the user"})
+			s.error(w, r, 204, errors.New("no data for the user"))
 			return
 		}
 

@@ -24,3 +24,4 @@ curl -v --cookie "education=MTY1NDYxNDA2MnxEdi1CQkFFQ180SUFBUkFCRUFBQUh2LUNBQUVH
 
 curl -v --cookie "education=MTY1NDYxNDA2MnxEdi1CQkFFQ180SUFBUkFCRUFBQUh2LUNBQUVHYzNSeWFXNW5EQWtBQjNWelpYSmZhV1FEYVc1MEJBSUFEZz09fG5Tdx-37-d68qK6_u2A_mUQt2iExyoxNfR7QPMucxRn"   -H "Content-Type: text/plain"  http://localhost:8080/api/user/balance
 
+make ; ./gophermart -a=0.0.0.0:8090 -r=http://0.0.0.0:8080

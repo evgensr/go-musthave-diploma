@@ -7,6 +7,7 @@ import (
 	"github.com/evgensr/go-musthave-diploma/internal/model"
 	"github.com/evgensr/go-musthave-diploma/internal/store"
 	"github.com/sirupsen/logrus"
+	"log"
 	"net/http"
 	"time"
 )
@@ -71,6 +72,7 @@ func (w *Worker) getAccrual(oin chan []model.Order, oout chan model.Order, clien
 		if err != nil {
 			w.logger.Debug("Error processing response" + err.Error())
 		}
+		log.Println(intermOrder)
 
 		oout <- model.Order{ID: intermOrder.ID, Amount: intermOrder.Amount, Status: intermOrder.Status}
 

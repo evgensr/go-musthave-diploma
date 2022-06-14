@@ -108,8 +108,22 @@ func (w *Withdrawal) MarshalJSON() ([]byte, error) {
 
 	nb := newWithdrawal{
 		ID:     fmt.Sprint(w.ID),
-		Amount: math.Abs(float64(w.Amount)),
+		Amount: math.Abs(float64(w.Amount)) / 100,
 		Date:   w.Date.Format(time.RFC3339),
+	}
+
+	return json.Marshal(nb)
+}
+
+func (b *Balance) MarshalJSON() ([]byte, error) {
+	type newBalance struct {
+		Current   float64 `json:"current"`
+		Withdrawn float64 `json:"withdrawn"`
+	}
+
+	nb := newBalance{
+		Current:   float64(b.Current) / 100,
+		Withdrawn: math.Abs(float64(b.Withdrawn)) / 100,
 	}
 
 	return json.Marshal(nb)
