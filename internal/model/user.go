@@ -169,3 +169,27 @@ func (b *Balance) UnmarshalJSON(data []byte) error {
 
 	return nil
 }
+
+func (u *AccrualOrder) UnmarshalJSON(data []byte) error {
+	type newU struct {
+		ID     string  `json:"order"`
+		Status string  `json:"status"`
+		Amount float64 `json:"accrual"`
+	}
+	nu := newU{}
+
+	if err := json.Unmarshal(data, &nu); err != nil {
+		return err
+	}
+
+	s, err := strconv.Atoi(nu.ID)
+	if err != nil {
+		return fmt.Errorf("order invalid")
+	}
+
+	u.ID = int64(s)
+	u.Amount = int64(nu.Amount * 100)
+	u.Status = nu.Status
+
+	return nil
+}

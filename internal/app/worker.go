@@ -73,6 +73,7 @@ func (w *Worker) getAccrual(oin chan []model.Order, oout chan model.Order, clien
 			w.logger.Debug("Error processing response" + err.Error())
 		}
 		log.Println("result response bonus", intermOrder)
+		log.Println("order: ", intermOrder.ID)
 		log.Println("bonuses: ", intermOrder.Amount)
 
 		oout <- model.Order{ID: intermOrder.ID, Amount: intermOrder.Amount, Status: intermOrder.Status}
