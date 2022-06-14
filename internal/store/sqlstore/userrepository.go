@@ -111,7 +111,10 @@ func (r *UserRepository) SelectAllOrders(ctx context.Context, u int64) ([]*model
 	if err != nil {
 		return nil, err
 	}
-	defer row.Close()
+	defer func() {
+		_ = row.Close()
+		_ = row.Err() // or modify return value
+	}()
 
 	for row.Next() {
 		var o model.Order
@@ -150,9 +153,10 @@ func (r *UserRepository) SelectAllWithdrawals(ctx context.Context, u int64) (*[]
 		return nil, fmt.Errorf("sql err: %v", err)
 	}
 
-	if err != nil {
-		return nil, fmt.Errorf("init select from orders failed: %v", err)
-	}
+	defer func() {
+		_ = row.Close()
+		_ = row.Err() // or modify return value
+	}()
 
 	for row.Next() {
 		var o model.Withdrawal
@@ -200,7 +204,11 @@ func (r *UserRepository) SelectOrdersForUpdate(ctx context.Context, oin chan []m
 			if err != nil {
 				return fmt.Errorf("init select from bonuses failed: %v", err)
 			}
-			defer row.Close()
+
+			defer func() {
+				_ = row.Close()
+				_ = row.Err() // or modify return value
+			}()
 
 			for row.Next() {
 				var o model.Order

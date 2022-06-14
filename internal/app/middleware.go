@@ -70,7 +70,7 @@ func (s *server) handleSessionsCreate() http.HandlerFunc {
 		}
 
 		session.Values["user_id"] = u.ID
-		s.sessionStore.Save(r, w, session)
+		err = s.sessionStore.Save(r, w, session)
 		if err != nil {
 			s.error(w, r, http.StatusInternalServerError, err)
 			return

@@ -94,6 +94,11 @@ func (s *server) handlerPostOrders() http.HandlerFunc {
 		s.logger.Info("post new order: ", order)
 
 		expectedUser, err := s.store.User().SelectUserForOrder(s.ctx, order)
+
+		if err != nil {
+			s.error(w, r, 500, errors.New("error select order"))
+		}
+
 		if expectedUser == user.ID {
 			s.error(w, r, 200, errors.New("the order number has already been uploaded by this user"))
 			return
@@ -104,6 +109,10 @@ func (s *server) handlerPostOrders() http.HandlerFunc {
 		}
 
 		err = s.store.User().InsertOrder(s.ctx, order)
+		if err != nil {
+			s.error(w, r, 500, errors.New("error insert order"))
+			return
+		}
 
 		s.respond(w, r, http.StatusAccepted, struct {
 			Status string `json:"status"`
@@ -170,7 +179,7 @@ func (s *server) handleUsersCreate() http.HandlerFunc {
 		}
 
 		session.Values["user_id"] = u.ID
-		s.sessionStore.Save(r, w, session)
+		err = s.sessionStore.Save(r, w, session)
 		if err != nil {
 			s.error(w, r, http.StatusInternalServerError, err)
 			return
