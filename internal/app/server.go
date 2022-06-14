@@ -93,11 +93,7 @@ func (s *server) handlerPostOrders() http.HandlerFunc {
 
 		s.logger.Info("post new order: ", order)
 
-		expectedUser, err := s.store.User().SelectUserForOrder(s.ctx, order)
-
-		if err != nil {
-			s.error(w, r, 500, errors.New("error select order"))
-		}
+		expectedUser, _ := s.store.User().SelectUserForOrder(s.ctx, order)
 
 		if expectedUser == user.ID {
 			s.error(w, r, 200, errors.New("the order number has already been uploaded by this user"))
