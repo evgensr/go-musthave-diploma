@@ -178,6 +178,8 @@ func (s *server) handleUsersCreate() http.HandlerFunc {
 
 }
 
+// handlerGetBalance получение текущего баланса счёта баллов лояльности пользователя
+// GET /api/user/balance
 func (s *server) handlerGetBalance() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
@@ -196,7 +198,8 @@ func (s *server) handlerGetBalance() http.HandlerFunc {
 
 }
 
-// handlerPostWithdraw  списания бонусов /api/user/balance/withdraw
+// handlerPostWithdraw запрос на списание баллов с накопительного счёта в счёт оплаты нового заказа
+// POST /api/user/balance/withdraw
 func (s *server) handlerPostWithdraw() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
@@ -221,6 +224,19 @@ func (s *server) handlerPostWithdraw() http.HandlerFunc {
 			return
 		}
 
+		// получение текущего баланса пользователя
+		balance, err := s.store.User().SelectBalance(s.ctx, user.ID)
+		if err != nil {
+			s.error(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		// если баланс, который пришел от пользователя, больше его текущего, то выходим с ошибкой
+		if o.Amount > balance.Current {
+			s.error(w, r, 402, errors.New("the current balance is not enough"))
+			return
+		}
+
 		order := model.Order{ID: o.ID, Amount: -o.Amount, UserID: user.ID, Status: "PROCESSED", Type: "withdraw"}
 		err = s.store.User().InsertOrder(s.ctx, order)
 		if err != nil {
@@ -236,7 +252,8 @@ func (s *server) handlerPostWithdraw() http.HandlerFunc {
 
 }
 
-// handlerGetWithdraw Получение информации о выводе средств /api/user/balance/withdrawals
+// handlerGetWithdraw запрос на списание баллов с накопительного счёта в счёт оплаты нового заказа;
+// GET /api/user/balance/withdrawals
 func (s *server) handlerGetWithdraw() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
@@ -250,10 +267,10 @@ func (s *server) handlerGetWithdraw() http.HandlerFunc {
 			return
 		}
 		// проверяем существование записей о списании
-		//if len(result) == 0 {
-		//	s.error(w, r, 204, errors.New("result empty"))
-		//	return
-		//}
+		if len(*result) == 0 {
+			s.error(w, r, 204, errors.New("result empty"))
+			return
+		}
 
 		s.respond(w, r, http.StatusAccepted, result)
 

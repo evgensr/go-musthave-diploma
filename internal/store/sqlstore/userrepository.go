@@ -69,9 +69,6 @@ func (r *UserRepository) Find(id int64) (*model.User, error) {
 
 // InsertOrder new order
 func (r *UserRepository) InsertOrder(ctx context.Context, order model.Order) error {
-
-	// log.Println(order)
-
 	var id int64
 
 	err := r.store.db.QueryRow(
@@ -82,8 +79,6 @@ func (r *UserRepository) InsertOrder(ctx context.Context, order model.Order) err
 		order.Type,
 		order.Status,
 	).Scan(&id)
-
-	// log.Println(id)
 
 	if err != nil {
 		return err
