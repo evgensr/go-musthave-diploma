@@ -53,17 +53,9 @@ func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	s.router.ServeHTTP(w, r)
 }
 
-func (s *server) handleWhoami() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		s.respond(w, r, http.StatusOK, r.Context().Value(ctxKeyUser).(*model.User))
-	}
-
-}
-
 // handlerPostOrders загрузка пользователем номера заказа для расчёта
 // POST /api/user/orders
 func (s *server) handlerPostOrders() http.HandlerFunc {
-
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		// создаем переменную для передачи в функции
@@ -90,8 +82,6 @@ func (s *server) handlerPostOrders() http.HandlerFunc {
 		order.Status = "NEW"
 		order.Type = "top_up"
 		order.ID = int64(id)
-
-		s.logger.Info("post new order: ", order)
 
 		expectedUser, _ := s.store.User().SelectUserForOrder(s.ctx, order)
 
@@ -121,12 +111,10 @@ func (s *server) handlerPostOrders() http.HandlerFunc {
 // handlerGetOrders Получение списка загруженных номеров заказов
 // GET /api/user/orders
 func (s *server) handlerGetOrders() http.HandlerFunc {
-
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		user := r.Context().Value(ctxKeyUser).(*model.User)
 		orders, err := s.store.User().SelectAllOrders(s.ctx, user.ID)
-		// s.logger.Info("orders", orders)
 
 		if err != nil {
 			s.error(w, r, http.StatusInternalServerError, err)
@@ -196,7 +184,6 @@ func (s *server) handlerGetBalance() http.HandlerFunc {
 		user := r.Context().Value(ctxKeyUser).(*model.User)
 
 		orders, err := s.store.User().SelectBalance(s.ctx, user.ID)
-		s.logger.Info("balance", orders)
 
 		if err != nil {
 			s.error(w, r, http.StatusInternalServerError, err)
@@ -246,8 +233,6 @@ func (s *server) handlerPostWithdraw() http.HandlerFunc {
 			s.error(w, r, http.StatusInternalServerError, err)
 			return
 		}
-		log.Println("текущий баланс", balance)
-		log.Println("списание ", o.Amount)
 
 		// если баланс, который пришел от пользователя, больше его текущего, то выходим с ошибкой
 		if o.Amount > balance.Current {
@@ -298,7 +283,6 @@ func (s *server) handlerGetWithdraw() http.HandlerFunc {
 
 func (s *server) error(w http.ResponseWriter, r *http.Request, code int, err error) {
 	s.respond(w, r, code, map[string]string{"error": err.Error()})
-
 }
 
 func (s *server) respond(w http.ResponseWriter, r *http.Request, code int, data interface{}) {

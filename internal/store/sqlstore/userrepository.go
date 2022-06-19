@@ -15,7 +15,6 @@ type UserRepository struct {
 }
 
 func (r *UserRepository) Create(u *model.User) error {
-
 	if err := u.Validate(); err != nil {
 		return err
 	}
@@ -88,7 +87,6 @@ func (r *UserRepository) InsertOrder(ctx context.Context, order model.Order) err
 }
 
 func (r *UserRepository) SelectUserForOrder(ctx context.Context, order model.Order) (int64, error) {
-
 	var id int64
 	err := r.store.db.QueryRow(
 		"SELECT users.id FROM users JOIN bonuses ON users.id=bonuses.user_id WHERE order_id=$1 LIMIT 1",
@@ -130,7 +128,6 @@ func (r *UserRepository) SelectAllOrders(ctx context.Context, u int64) ([]*model
 
 // SelectBalance select balance
 func (r *UserRepository) SelectBalance(ctx context.Context, u int64) (*model.Balance, error) {
-
 	var val model.Balance
 	row := r.store.db.QueryRow("SELECT COALESCE(SUM(change), 0), COALESCE(SUM(nullif(LEAST(change, 0),0)),0) FROM bonuses WHERE user_id=$1 AND status='PROCESSED'", u)
 	err := row.Scan(&val.Current, &val.Withdrawn)
@@ -144,7 +141,6 @@ func (r *UserRepository) SelectBalance(ctx context.Context, u int64) (*model.Bal
 
 // SelectAllWithdrawals select balance
 func (r *UserRepository) SelectAllWithdrawals(ctx context.Context, u int64) (*[]model.Withdrawal, error) {
-
 	var listOrders []model.Withdrawal
 
 	row, err := r.store.db.Query("SELECT order_id, change, change_date "+
@@ -173,7 +169,6 @@ func (r *UserRepository) SelectAllWithdrawals(ctx context.Context, u int64) (*[]
 }
 
 func (r *UserRepository) doTransaction(fu ...func() error) error {
-
 	tx, err := r.store.db.Begin()
 	if err != nil {
 		return fmt.Errorf("starting connection failed: %v", err)

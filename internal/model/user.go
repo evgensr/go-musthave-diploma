@@ -81,7 +81,6 @@ func encryptString(s string) (string, error) {
 }
 
 func (o *Order) MarshalJSON() ([]byte, error) {
-
 	type newOrder struct {
 		ID     string  `json:"number,omitempty"`
 		Status string  `json:"status"`
@@ -122,7 +121,6 @@ func (w *Withdrawal) UnmarshalJSON(data []byte) error {
 }
 
 func (w *Withdrawal) MarshalJSON() ([]byte, error) {
-
 	type newWithdrawal struct {
 		ID     string  `json:"order,omitempty"`
 		Amount float64 `json:"sum,omitempty"`

@@ -27,17 +27,8 @@ func main() {
 
 	flag.Parse()
 
-	// sessionStore := sessions.NewCookieStore([]byte(conf.SessionKey))
-
 	if err := app.Start(&conf); err != nil {
 		log.Fatal("fatal ", err)
 	}
-
-	//
-	//server := app.New(&conf, sessionStore)
-	//
-	//if err := server.Start(); err != nil {
-	//	log.Fatal(err)
-	//}
 
 }

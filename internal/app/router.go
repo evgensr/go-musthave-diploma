@@ -21,11 +21,4 @@ func (s *server) configureRouter() {
 	private.HandleFunc("/api/user/balance/withdraw", s.handlerPostWithdraw()).Methods(http.MethodPost)
 	private.HandleFunc("/api/user/balance/withdrawals", s.handlerGetWithdraw()).Methods(http.MethodGet)
 
-	// s.router.HandleFunc("/sessions", s.handleSessionsCreate()).Methods("POST")
-
-	// регистрация пользователя;
-	// s.router.HandleFunc("/api/user/register", s.HandlerUserRegister()).Methods(http.MethodPost)
-
-	private.HandleFunc("/whoami", s.handleWhoami()).Methods("GET")
-
 }

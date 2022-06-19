@@ -7,7 +7,6 @@ import (
 	"github.com/evgensr/go-musthave-diploma/internal/model"
 	"github.com/evgensr/go-musthave-diploma/internal/store"
 	"github.com/sirupsen/logrus"
-	"log"
 	"net/http"
 	"time"
 )
@@ -29,7 +28,7 @@ func NewWorker(ctx context.Context, logger *logrus.Logger, db store.Store, cfg *
 	}
 }
 
-// UpdateStatus
+// UpdateStatus обновление статуса
 func (w *Worker) UpdateStatus(t <-chan time.Time) {
 	client := &http.Client{}
 	for {
@@ -48,7 +47,7 @@ func (w *Worker) UpdateStatus(t <-chan time.Time) {
 
 func (w *Worker) getAccrual(oin chan []model.Order, oout chan model.Order, client *http.Client) {
 	url := fmt.Sprintf("%s/api/orders/", w.cfg.AccrualSystemAddress)
-	// w.logger.Info(url)
+
 	orders := <-oin
 
 	for _, order := range orders {
@@ -72,9 +71,6 @@ func (w *Worker) getAccrual(oin chan []model.Order, oout chan model.Order, clien
 		if err != nil {
 			w.logger.Debug("Error processing response" + err.Error())
 		}
-		log.Println("result response bonus", intermOrder)
-		log.Println("order: ", intermOrder.ID)
-		log.Println("bonuses: ", intermOrder.Amount)
 
 		oout <- model.Order{ID: intermOrder.ID, Amount: intermOrder.Amount, Status: intermOrder.Status}
 

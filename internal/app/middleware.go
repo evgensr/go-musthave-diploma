@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
-	"log"
 	"net/http"
 	"time"
 )
@@ -43,7 +42,6 @@ func (s *server) logRequest(next http.Handler) http.Handler {
 
 // handleSessionsCreate handler sessions
 func (s *server) handleSessionsCreate() http.HandlerFunc {
-
 	type request struct {
 		Login    string `json:"login"`
 		Password string `json:"password"`
@@ -52,7 +50,6 @@ func (s *server) handleSessionsCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		req := &request{}
 		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
-			log.Println(r.Body)
 			s.error(w, r, http.StatusBadRequest, err)
 			return
 
@@ -104,5 +101,4 @@ func (s *server) authenticateUser(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r.WithContext(context.WithValue(r.Context(), ctxKeyUser, u)))
 
 	})
-
 }

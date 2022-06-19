@@ -6,14 +6,11 @@ import (
 	"errors"
 	"github.com/evgensr/go-musthave-diploma/internal/store/sqlstore"
 	"github.com/gorilla/sessions"
-	"log"
 	"net/http"
 	"time"
 )
 
 func Start(config *Config) error {
-
-	log.Println(config)
 	db, err := newDB(config.DatabaseURI)
 	if err != nil {
 		return err
