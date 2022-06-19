@@ -1,13 +1,11 @@
-CREATE TABLE IF NOT EXISTS  users(
+CREATE TABLE IF NOT EXISTS users(
     id SERIAL PRIMARY KEY,
     login varchar not null unique,
     encrypted_password varchar not null,
-    balance bigint DEFAULT 0,
     created_at timestamp DEFAULT current_timestamp
 );
 
-
-CREATE TABLE IF NOT EXISTS bonuses   (
+CREATE TABLE IF NOT EXISTS bonuses(
     id SERIAL PRIMARY KEY,
     user_id bigint,
     order_id bigint,

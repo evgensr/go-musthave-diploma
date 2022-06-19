@@ -72,7 +72,7 @@ func (s *server) handlerPostOrders() http.HandlerFunc {
 		// проверка луна
 		ok := luhn.Valid(id)
 		if !ok {
-			s.error(w, r, 422, errors.New("invalid order number format"))
+			s.error(w, r, http.StatusUnprocessableEntity, errors.New("invalid order number format"))
 			return
 		}
 
@@ -86,17 +86,17 @@ func (s *server) handlerPostOrders() http.HandlerFunc {
 		expectedUser, _ := s.store.User().SelectUserForOrder(s.ctx, order)
 
 		if expectedUser == user.ID {
-			s.error(w, r, 200, errors.New("the order number has already been uploaded by this user"))
+			s.error(w, r, http.StatusOK, errors.New("the order number has already been uploaded by this user"))
 			return
 		}
 		if expectedUser != 0 {
-			s.error(w, r, 409, errors.New("the order number has already been uploaded by other user"))
+			s.error(w, r, http.StatusConflict, errors.New("the order number has already been uploaded by other user"))
 			return
 		}
 
 		err = s.store.User().InsertOrder(s.ctx, order)
 		if err != nil {
-			s.error(w, r, 500, errors.New("error insert order"))
+			s.error(w, r, http.StatusInternalServerError, errors.New("error insert order"))
 			return
 		}
 
@@ -122,7 +122,7 @@ func (s *server) handlerGetOrders() http.HandlerFunc {
 		}
 
 		if len(orders) == 0 {
-			s.error(w, r, 204, errors.New("no data for the user"))
+			s.error(w, r, http.StatusNoContent, errors.New("no data for the user"))
 			return
 		}
 
@@ -152,7 +152,7 @@ func (s *server) handleUsersCreate() http.HandlerFunc {
 		}
 
 		if err := s.store.User().Create(u); err != nil {
-			s.error(w, r, 409, err)
+			s.error(w, r, http.StatusConflict, err)
 			return
 		}
 
@@ -223,7 +223,7 @@ func (s *server) handlerPostWithdraw() http.HandlerFunc {
 		// проверка луна
 		ok := luhn.Valid(i)
 		if !ok {
-			s.error(w, r, 422, errors.New("invalid order"))
+			s.error(w, r, http.StatusUnprocessableEntity, errors.New("invalid order"))
 			return
 		}
 
@@ -236,7 +236,7 @@ func (s *server) handlerPostWithdraw() http.HandlerFunc {
 
 		// если баланс, который пришел от пользователя, больше его текущего, то выходим с ошибкой
 		if o.Amount > balance.Current {
-			s.error(w, r, 402, errors.New("the current balance is not enough"))
+			s.error(w, r, http.StatusPaymentRequired, errors.New("the current balance is not enough"))
 			return
 		}
 
@@ -271,7 +271,7 @@ func (s *server) handlerGetWithdraw() http.HandlerFunc {
 		}
 		// проверяем существование записей о списании
 		if len(*result) == 0 {
-			s.error(w, r, 204, errors.New("result empty"))
+			s.error(w, r, http.StatusNoContent, errors.New("result empty"))
 			return
 		}
 
