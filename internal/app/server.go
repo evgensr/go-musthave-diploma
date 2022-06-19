@@ -4,16 +4,17 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"github.com/evgensr/go-musthave-diploma/internal/model"
-	"github.com/evgensr/go-musthave-diploma/internal/store"
+	"io/ioutil"
+	"net/http"
+	"strconv"
+
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	"github.com/sirupsen/logrus"
 	"github.com/theplant/luhn"
-	"io/ioutil"
-	"log"
-	"net/http"
-	"strconv"
+
+	"github.com/evgensr/go-musthave-diploma/internal/model"
+	"github.com/evgensr/go-musthave-diploma/internal/store"
 )
 
 const (
@@ -140,10 +141,8 @@ func (s *server) handleUsersCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		req := &request{}
 		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
-			log.Println(r.Body)
 			s.error(w, r, http.StatusBadRequest, err)
 			return
-
 		}
 
 		u := &model.User{

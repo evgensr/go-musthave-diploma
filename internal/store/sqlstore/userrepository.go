@@ -5,9 +5,10 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"log"
+
 	"github.com/evgensr/go-musthave-diploma/internal/model"
 	"github.com/evgensr/go-musthave-diploma/internal/store"
-	"log"
 )
 
 type UserRepository struct {

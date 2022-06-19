@@ -3,10 +3,11 @@ package app
 import (
 	"context"
 	"encoding/json"
-	"github.com/google/uuid"
-	"github.com/sirupsen/logrus"
 	"net/http"
 	"time"
+
+	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
 )
 
 // setRequestID id for request

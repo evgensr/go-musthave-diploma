@@ -3,11 +3,12 @@ package model
 import (
 	"encoding/json"
 	"fmt"
-	validation "github.com/go-ozzo/ozzo-validation"
-	"golang.org/x/crypto/bcrypt"
 	"math"
 	"strconv"
 	"time"
+
+	validation "github.com/go-ozzo/ozzo-validation"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type User struct {

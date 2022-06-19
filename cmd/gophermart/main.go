@@ -2,10 +2,11 @@ package main
 
 import (
 	"flag"
-	"github.com/caarlos0/env/v6"
-	"github.com/evgensr/go-musthave-diploma/internal/app"
 	"log"
 	"os"
+
+	"github.com/caarlos0/env/v6"
+	"github.com/evgensr/go-musthave-diploma/internal/app"
 )
 
 var version = "0.0.1"

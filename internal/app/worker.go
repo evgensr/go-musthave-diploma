@@ -4,11 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/evgensr/go-musthave-diploma/internal/model"
-	"github.com/evgensr/go-musthave-diploma/internal/store"
-	"github.com/sirupsen/logrus"
 	"net/http"
 	"time"
+
+	"github.com/sirupsen/logrus"
+
+	"github.com/evgensr/go-musthave-diploma/internal/model"
+	"github.com/evgensr/go-musthave-diploma/internal/store"
 )
 
 type Worker struct {

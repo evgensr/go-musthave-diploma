@@ -4,10 +4,11 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"github.com/evgensr/go-musthave-diploma/internal/store/sqlstore"
-	"github.com/gorilla/sessions"
 	"net/http"
 	"time"
+
+	"github.com/evgensr/go-musthave-diploma/internal/store/sqlstore"
+	"github.com/gorilla/sessions"
 )
 
 func Start(config *Config) error {
